@@ -12,16 +12,22 @@
     let feedbackIframe;
     let initConfig;
     let feedbackConfig;
+    let isRecentlyOpened = false;
+    const openCooldownPeriod = 300; // 0.3 sec
     let iframeOrigin = "https://widget.feedbackchimp.com";
 
     function openFeedbackWidget() {
         if (feedbackWrapperDiv) {
             feedbackWrapperDiv.style.display = 'block';
+            isRecentlyOpened = true;
+            setTimeout(() => {
+                isRecentlyOpened = false;
+            }, openCooldownPeriod);
         }
     }
 
     function closeFeedbackWidget() {
-        if (feedbackWrapperDiv) {
+        if (feedbackWrapperDiv && !isRecentlyOpened) {
             feedbackWrapperDiv.style.display = 'none';
         }
     }
@@ -389,6 +395,7 @@
 
         document.addEventListener('click', function (event) {
             if (feedbackWrapperDiv.style.display === 'block'
+                && !isRecentlyOpened
                 && !feedbackWrapperDiv.contains(event.target)
                 && !event.target.classList.contains('fb-feedback-widget-feedback-button')
                 && !event.target.hasAttribute('data-feedbackchimp-feedback')
