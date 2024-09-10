@@ -12,7 +12,7 @@
     let feedbackIframe;
     let initConfig;
     let feedbackConfig;
-    let iframeOrigin = "http://localhost:5174";
+    let iframeOrigin = "https://widget.feedbackchimp.com";
 
     function openFeedbackWidget() {
         if (feedbackWrapperDiv) {
@@ -345,7 +345,7 @@
         // Construct query parameters
         const queryParams = new URLSearchParams(config).toString();
 
-        let baseSrc = `${iframeOrigin}/widget/feedback`;
+        let baseSrc = `${iframeOrigin}/feedback`;
         let iframeSrc = baseSrc;
 
         // Check if defaultBoard is set in the config, and append it to the iframe path
