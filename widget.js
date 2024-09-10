@@ -123,14 +123,16 @@
                             break;
                         case 'top':
                             if (buttonRect.top - wrapperDiv.offsetHeight - 8 >= 0) {
-                                left = buttonRect.left;
+                                // Center align horizontally
+                                left = buttonRect.left + (buttonRect.width / 2) - (wrapperDiv.offsetWidth / 2);
                                 top = buttonRect.top - wrapperDiv.offsetHeight - 8;
                                 return true;
                             }
                             break;
                         case 'bottom':
                             if (buttonRect.bottom + wrapperDiv.offsetHeight + 8 <= windowHeight) {
-                                left = buttonRect.left;
+                                // Center align horizontally
+                                left = buttonRect.left + (buttonRect.width / 2) - (wrapperDiv.offsetWidth / 2);
                                 top = buttonRect.bottom + 8;
                                 return true;
                             }
@@ -200,7 +202,7 @@
                 }
             }, false);
 
-        } else if (action === "manually_open_changelog_popup") {
+        } else if (action === "open_changelog_popup") {
             if (!isInitialized) {
                 console.error('Feedbackchimp: initialize_changelog_widget must be called first');
                 return;
