@@ -245,7 +245,6 @@
                 if (event.origin === iframeOrigin && event.data === 'closeChangelog') {
                     wrapperDiv.style.display = 'none';
                 } else if (event.data && event.data.action === 'updateUnviewedChangelogCount') {
-                    console.log(event)
                     unviewedChangelogCount = event.data.content
                     updateBadgeContent(event.data.content);
                 }
