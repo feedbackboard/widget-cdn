@@ -72,6 +72,30 @@
         }
     }
 
+    function openChangelogPopup(slug = null) {
+        if (!manualPopupDiv) {
+            createManualPopup();
+        }
+
+        const queryParams = new URLSearchParams(initConfig).toString();
+        let iframeSrc = `${iframeOrigin}/changelog/popup`;
+
+        if (slug) {
+            iframeSrc += '/' + encodeURIComponent(slug);
+        }
+
+        manualPopupIframe.src = iframeSrc + '?' + queryParams;
+
+        // Show manual popup
+        manualPopupDiv.style.display = 'flex';
+
+        // Update iframe src with the new slug if provided
+        // if (slug) {
+        //     const currentSrc = new URL(manualPopupIframe.src);
+        //     currentSrc.searchParams.set('slug', slug);
+        //     manualPopupIframe.src = currentSrc.toString();
+        // }
+    }
 
     window.Feedbackchimp = function (action, config) {
         if (action === "initialize_changelog_widget") {
@@ -247,6 +271,9 @@
                 } else if (event.data && event.data.action === 'updateUnviewedChangelogCount') {
                     unviewedChangelogCount = event.data.content
                     updateBadgeContent(event.data.content);
+                } else if (event.data && event.data.action === 'openChangelogPopup') {
+                    const changelogSlug = event.data.content
+                    openChangelogPopup(changelogSlug)
                 }
             }, false);
 
@@ -256,29 +283,7 @@
                 return;
             }
 
-            // Create manual popup if it doesn't exist
-            if (!manualPopupDiv) {
-                createManualPopup();
-            }
-
-            const queryParams = new URLSearchParams(initConfig).toString();
-            let iframeSrc = `${iframeOrigin}/changelog/popup`;
-
-            if (config && config.slug) {
-                iframeSrc += '/' + encodeURIComponent(config.slug);
-            }
-
-            manualPopupIframe.src = iframeSrc + '?' + queryParams;
-
-            // Show manual popup
-            manualPopupDiv.style.display = 'flex';
-
-            // Update iframe src with the new slug if provided
-            if (config && config.slug) {
-                const currentSrc = new URL(manualPopupIframe.src);
-                currentSrc.searchParams.set('slug', config.slug);
-                manualPopupIframe.src = currentSrc.toString();
-            }
+            openChangelogPopup(config.slug)
         } else if (action === "initialize_feedback_widget") {
             isFeedbackInitialized = true;
             feedbackConfig = config;
