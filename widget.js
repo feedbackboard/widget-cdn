@@ -100,7 +100,7 @@
                 return;
             }
 
-            updateBadge = triggerButton.querySelector('#fb-update-badge');
+            updateBadge = triggerButton.querySelector('#fc-update-badge');
 
             // Create the wrapper div
             wrapperDiv = document.createElement('div');
@@ -245,6 +245,7 @@
                 if (event.origin === iframeOrigin && event.data === 'closeChangelog') {
                     wrapperDiv.style.display = 'none';
                 } else if (event.data && event.data.action === 'updateUnviewedChangelogCount') {
+                    console.log(event)
                     unviewedChangelogCount = event.data.content
                     updateBadgeContent(event.data.content);
                 }
@@ -491,7 +492,7 @@
             if (feedbackWrapperDiv.style.display === 'block'
                 && !isRecentlyOpened
                 && !feedbackWrapperDiv.contains(event.target)
-                && !event.target.classList.contains('fb-feedback-widget-feedback-button')
+                && !event.target.classList.contains('fc-feedback-widget-feedback-button')
                 && !event.target.hasAttribute('data-feedbackchimp-feedback')
             ) {
                 closeFeedbackWidget();
@@ -513,8 +514,8 @@
         const style = document.createElement('style');
         style.textContent = `
             :root {
-                --fb-feedback-button-bg-color: ${color};
-                --fb-feedback-button-text-color: 255, 255, 255;
+                --fc-feedback-button-bg-color: ${color};
+                --fc-feedback-button-text-color: 255, 255, 255;
             }
             @keyframes feedbackFadeIn {
                 from { opacity: 0; }
@@ -529,7 +530,7 @@
 
         const floatingButton = document.createElement('button');
         floatingButton.textContent = 'Feedback';
-        floatingButton.className = 'fb-feedback-widget-feedback-button';
+        floatingButton.className = 'fc-feedback-widget-feedback-button';
         const baseStyle = `
             transform: rotate(-90deg) translate(50%, -50%);
             transform-origin: 100% 50%;
@@ -538,12 +539,12 @@
             bottom: auto;
             top: 45%;
             padding: 0 16px 0 13px;
-            background-color: var(--fb-feedback-button-bg-color);
+            background-color: var(--fc-feedback-button-bg-color);
             background-image: none;
             border: 1px solid hsla(0, 0%, 100%, .2);
             border-radius: 8px 8px 0 0;
             box-sizing: border-box;
-            color: rgba(var(--fb-feedback-button-text-color), 1);
+            color: rgba(var(--fc-feedback-button-text-color), 1);
             cursor: pointer;
             display: block;
             font-size: 14px;
