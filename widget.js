@@ -65,7 +65,7 @@
                         type: 'externalRouteChange',
                         path: subPath,
                         pop: isPop,
-                    }, "http://localhost:5174");
+                    }, `https://${embedConfig.organization}.feedbackchimp.space`);
                 }
             }
         }
