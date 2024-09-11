@@ -77,7 +77,7 @@
             createManualPopup();
         }
 
-        const queryParams = new URLSearchParams(initConfig).toString();
+        const queryParams = new URLSearchParams({...initConfig, "popup": true}).toString();
         let iframeSrc = `${iframeOrigin}/changelog/popup`;
 
         if (slug) {
