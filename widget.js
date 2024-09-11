@@ -1,6 +1,7 @@
 (function () {
     let originalFeedbackchimp = window.Feedbackchimp;
     let wrapperDiv;
+    let embedDiv;
     let iframe;
     let triggerButton;
     let updateBadge;
@@ -8,10 +9,12 @@
     let manualPopupIframe;
     let isInitialized = false;
     let isFeedbackInitialized = false;
+    let isEmbedInitialized = false;
     let feedbackWrapperDiv;
     let feedbackIframe;
     let initConfig;
     let feedbackConfig;
+    let embedConfig;
     let isRecentlyOpened = false;
     const openCooldownPeriod = 300; // 0.3 sec
     let iframeOrigin = "https://widget.feedbackchimp.com";
@@ -31,6 +34,43 @@
             feedbackWrapperDiv.style.display = 'none';
         }
     }
+
+    function removeExtraSlashesFromUrl(url) {
+        return url.replace(/([^:]\/)\/+/g, "$1").replace(/\/+$/, "");
+    }
+
+
+    function handleUrlChange(isPop = false) {
+        if (!isEmbedInitialized) return;
+
+        const currentPath = window.location.pathname;
+        if (currentPath.startsWith(embedConfig.basePath)) {
+            const subPath = currentPath.slice(embedConfig.basePath.length);
+            const embedIframe = document.querySelector('iframe');
+            if (embedIframe) {
+                let isBlank = false;
+                try {
+                    isBlank = embedIframe.contentWindow.location.href === 'about:blank';
+                } catch {
+
+                }
+                // Reload iframe if it's blank or update the iframe's route
+                if (isBlank) {
+                    let iframeUrl = `https://${embedConfig.organization}.feedbackchimp.space/${subPath}`;
+                    iframeUrl = removeExtraSlashesFromUrl(iframeUrl)
+                    const queryParams = new URLSearchParams(embedConfig).toString();
+                    embedIframe.src = `${iframeUrl}?${queryParams}`;
+                } else {
+                    embedIframe.contentWindow.postMessage({
+                        type: 'externalRouteChange',
+                        path: subPath,
+                        pop: isPop,
+                    }, "http://localhost:5174");
+                }
+            }
+        }
+    }
+
 
     window.Feedbackchimp = function (action, config) {
         if (action === "initialize_changelog_widget") {
@@ -248,8 +288,58 @@
                 return;
             }
             openFeedbackWidget();
+        } else if (action === "embed") {
+            if (!config.basePath) {
+                config.basePath = "";
+            }
+            embedConfig = config;
+            createEmbedDiv();
+            isEmbedInitialized = true;
+
+            // Initialize embed
+            const embedIframe = document.createElement('iframe');
+            embedIframe.style.cssText = `
+            width: 100%;
+            height: 100%;
+            border: none;
+        `;
+            const queryParams = new URLSearchParams(config).toString();
+            embedIframe.src = `https://${config.organization}.feedbackchimp.space?${queryParams}`;
+            embedDiv.appendChild(embedIframe);
+
+            // Handle URL changes
+            handleUrlChange();
+
+            // Listen for popstate events (back/forward navigation)
+            window.addEventListener('popstate', function (event) {
+                handleUrlChange(true);
+            });
+
+
+            window.addEventListener('message', function (event) {
+                if (event.origin === `https://${config.organization}.feedbackchimp.space`) {
+                    if (event.data.type === 'routeChange') {
+                        let newPath = `${event.data.path}`;
+                        if (config.basePath) {
+                            newPath = `${config.basePath}${newPath}`;
+                        }
+                        if (window.location.pathname !== newPath) {
+                            window.history.pushState(null, '', newPath);
+                        }
+                    }
+                }
+            }, false);
         }
     };
+
+    function createEmbedDiv() {
+        embedDiv = document.querySelector('[data-feedbackchimp-embed]');
+        if (!embedDiv) {
+            embedDiv = document.createElement('div');
+            embedDiv.setAttribute('data-feedbackchimp-embed', '');
+            document.body.appendChild(embedDiv);
+        }
+    }
 
     function createManualPopup() {
         // Create style element for keyframes
