@@ -15,6 +15,7 @@
     let initConfig;
     let feedbackConfig;
     let embedConfig;
+    let unviewedChangelogCount;
     let isRecentlyOpened = false;
     const openCooldownPeriod = 300; // 0.3 sec
     let iframeOrigin = "https://widget.feedbackchimp.com";
@@ -243,7 +244,8 @@
             window.addEventListener('message', function (event) {
                 if (event.origin === iframeOrigin && event.data === 'closeChangelog') {
                     wrapperDiv.style.display = 'none';
-                } else if (event.data && event.data.action === 'updateBadge') {
+                } else if (event.data && event.data.action === 'updateUnviewedChangelogCount') {
+                    unviewedChangelogCount = event.data.content
                     updateBadgeContent(event.data.content);
                 }
             }, false);
@@ -288,6 +290,8 @@
                 return;
             }
             openFeedbackWidget();
+        } else if (action === "unviewed_changelog_count") {
+            return unviewedChangelogCount;
         } else if (action === "embed") {
             if (!config.basePath) {
                 config.basePath = "";
