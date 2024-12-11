@@ -135,7 +135,7 @@
                 max-height: 350px;
                 border-radius: 8px;
                 overflow: hidden;
-                position: fixed;
+                position: absolute;
                 transition: height .24s ease, max-height .24s ease, opacity .2s ease;
                 width: 340px;
                 will-change: height, margin-top, opacity, box-shadow;
@@ -228,7 +228,7 @@
                 top = Math.max(8, Math.min(top, windowHeight - wrapperDiv.offsetHeight - 8));
 
                 wrapperDiv.style.left = `${left}px`;
-                wrapperDiv.style.top = `${top}px`;
+                wrapperDiv.style.top = `${top + window.scrollY}px`;
             }
 
             // Append the wrapper div to the body
@@ -283,7 +283,7 @@
                 return;
             }
 
-            openChangelogPopup(config.slug)
+            openChangelogPopup(config)
         } else if (action === "initialize_feedback_widget") {
             isFeedbackInitialized = true;
             feedbackConfig = config;
@@ -391,7 +391,8 @@
             overflow: hidden !important;
             transition: height .95s ease, min-height .95s ease, opacity .3s ease;
             user-select: none;
-            width: 608px;
+            width: 100%;
+            max-width: 608px;
             z-index: 1000;
             background: rgb(245, 246, 249);
             box-shadow: rgba(0, 0, 0, 0.1) 0px 15px 25px;
